@@ -58,6 +58,11 @@ const userService = {
     const { password, ...userWithoutPassword } = user.toJSON();
     return userWithoutPassword;
   },
+
+  delete: async (id) => {
+    const success = await User.destroy({ where: { id } });
+    return !!success;
+  },
 };
 
 module.exports = userService;

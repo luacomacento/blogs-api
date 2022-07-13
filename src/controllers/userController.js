@@ -1,3 +1,5 @@
+const { BlogPost } = require('../database/models');
+const postService = require('../services/postService');
 const userService = require('../services/userService');
 
 const userController = {
@@ -20,6 +22,16 @@ const userController = {
     const user = await userService.getById(id);
     if (!user) return res.status(404).json({ message: 'User does not exist' });
     res.status(200).json(user);
+  },
+
+  delete: async (req, res) => {
+    const email = req.user;
+    const { id: userId } = await userService.getByEmail(email);
+    const postsToDelete = await postService.getPostsByUserId(userId);
+    const postsIds = postsToDelete.map((post) => post.id);
+    await postService.delete(postsIds);
+    await userService.delete(userId);
+    res.status(204).json();
   },
 };
 
