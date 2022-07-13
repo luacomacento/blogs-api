@@ -6,5 +6,6 @@ const post = Router();
 
 post.post('/', validateToken, postController.create);
 post.get('/', validateToken, postController.getAll);
+post.get('/:id', validateToken, postController.getById);
 
 module.exports = post;
