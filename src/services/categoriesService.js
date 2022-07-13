@@ -15,6 +15,11 @@ const categoriesService = {
     const category = await Category.create(categoryData);
     return category;
   },
+
+  getAll: async () => {
+    const categories = await Category.findAll();
+    return categories;
+  },
 };
 
 module.exports = categoriesService;
