@@ -34,6 +34,25 @@ const postController = {
 
     res.status(200).json(post);
   },
+
+  update: async (req, res) => {
+    const { id } = req.params;
+    const email = req.user;
+    const { title, content } = req.body;
+    const post = await postService.getById(id);
+    const { user: { email: userEmail } } = post.toJSON();
+    if (email !== userEmail) {
+      return res.status(401).json({ message: 'Unauthorized user' });
+    }
+
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Some required fields are missing' });
+    } 
+
+    await postService.update(id, { title, content });
+    const updatedPost = await postService.getById(id);
+    res.status(200).json(updatedPost);
+  },
 };
 
 module.exports = postController;

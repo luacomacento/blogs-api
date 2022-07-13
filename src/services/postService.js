@@ -52,6 +52,11 @@ const postService = {
     });
     return blogPost;
   },
+
+  update: async (id, postData) => {
+    const [success] = await BlogPost.update(postData, { where: { id } });
+    return !!success;
+  },
 };
 
 module.exports = postService;
