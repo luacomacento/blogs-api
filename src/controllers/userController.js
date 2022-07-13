@@ -9,6 +9,11 @@ const userController = {
     const token = await userService.getNewToken(userWithoutPassword);
     res.status(201).json({ token });
   },
+
+  getAll: async (_req, res) => {
+    const users = await userService.getAll();
+    res.status(200).json(users);
+  },
 };
 
 module.exports = userController;

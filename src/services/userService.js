@@ -35,6 +35,15 @@ const userService = {
     const token = jwt.sign({ data: userData }, process.env.JWT_SECRET, jwtConfig);
     return token;
   },
+
+  getAll: async () => {
+    const users = await User.findAll();
+    const result = users.map((user) => {
+      const { password, ...userWithoutPassword } = user.toJSON();
+      return userWithoutPassword;
+    });
+    return result;
+  },
 };
 
 module.exports = userService;
