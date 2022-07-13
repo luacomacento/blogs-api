@@ -57,6 +57,12 @@ const postService = {
     const [success] = await BlogPost.update(postData, { where: { id } });
     return !!success;
   },
+
+  delete: async (id) => {
+    await PostCategory.destroy({ where: { postId: id } });
+    const success = await BlogPost.destroy({ where: { id } });
+    return !!success;
+  },
 };
 
 module.exports = postService;
