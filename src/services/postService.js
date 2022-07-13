@@ -1,4 +1,20 @@
+const { Op } = require('sequelize');
 const { User, Category, BlogPost, PostCategory } = require('../database/models');
+
+const includeUserAndCategories = [
+  {
+    model: User,
+    as: 'user',
+    attributes: { exclude: ['password'] },
+  },
+  // Descobri que o exclude não funciona com nested inner joins (ou seja, não retiraria o campo PostCategory) e para isso precisaria usar um "through: {attributes: []}"
+  // Referência: https://stackoverflow.com/a/57774538
+  {
+    model: Category,
+    as: 'categories',
+    through: { attributes: [] },
+  },
+];
 
 const postService = {
   create: async (postData, categories) => {
@@ -16,20 +32,7 @@ const postService = {
 
   getAll: async () => {
     const blogPosts = await BlogPost.findAll({
-      include: [
-        {
-          model: User,
-          as: 'user',
-          attributes: { exclude: ['password'] },
-        },
-        // Descobri que o exclude não funciona com nested inner joins (ou seja, não retiraria o campo PostCategory) e para isso precisaria usar um "through: {attributes: []}"
-        // Referência: https://stackoverflow.com/a/57774538
-        {
-          model: Category,
-          as: 'categories',
-          through: { attributes: [] },
-        },
-      ],   
+      include: includeUserAndCategories,   
     });
     return blogPosts;
   },
@@ -37,18 +40,7 @@ const postService = {
   getById: async (id) => {
     const blogPost = await BlogPost.findOne({
       where: { id },
-      include: [
-        {
-          model: User,
-          as: 'user',
-          attributes: { exclude: ['password'] },
-        },
-        {
-          model: Category,
-          as: 'categories',
-          through: { attributes: [] },
-        },
-      ],
+      include: includeUserAndCategories,
     });
     return blogPost;
   },
@@ -78,6 +70,21 @@ const postService = {
   getPostsByUserId: async (userId) => {
     const postsByUser = await BlogPost.findAll({ where: { userId } });
     const result = postsByUser.map((post) => post.toJSON());
+    return result;
+  },
+
+  search: async (query) => {
+    const result = await BlogPost.findAll(
+      {
+        where: {
+          [Op.or]: [
+            { title: { [Op.like]: `%${query}%` } },
+            { content: { [Op.like]: `%${query}%` } },
+          ],
+        },
+        include: includeUserAndCategories,
+      },
+    );
     return result;
   },
 };

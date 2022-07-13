@@ -1,3 +1,5 @@
+// const { Op } = require('sequelize');
+// const { User, Category, BlogPost } = require('../database/models');
 const categoriesService = require('../services/categoriesService');
 const postService = require('../services/postService');
 const userService = require('../services/userService');
@@ -66,6 +68,12 @@ const postController = {
     await postService.delete(id);
 
     res.status(204).json();
+  },
+
+  search: async (req, res) => {
+    const { q: query } = req.query;
+    const blogPosts = await postService.search(query);
+    res.status(200).json(blogPosts);
   },
 };
 
