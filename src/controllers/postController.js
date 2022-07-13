@@ -21,6 +21,11 @@ const postController = {
 
     res.status(201).json(blogPost);
   },
+
+  getAll: async (req, res) => {
+    const posts = await postService.getAll();
+    res.status(200).json(posts);
+  },
 };
 
 module.exports = postController;

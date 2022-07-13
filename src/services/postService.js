@@ -1,4 +1,4 @@
-const { BlogPost, PostCategory } = require('../database/models');
+const { User, Category, BlogPost, PostCategory } = require('../database/models');
 
 const postService = {
   create: async (postData, categories) => {
@@ -12,6 +12,26 @@ const postService = {
       })),
     );
     return blogPost;
+  },
+
+  getAll: async () => {
+    const blogPosts = await BlogPost.findAll({
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: { exclude: ['password'] },
+        },
+        // Descobri que o exclude não funciona com nested inner joins (ou seja, não retiraria o campo PostCategory) e para isso precisaria usar um "through: {attributes: []}"
+        // Referência: https://stackoverflow.com/a/57774538
+        {
+          model: Category,
+          as: 'categories',
+          through: { attributes: [] },
+        },
+      ],   
+    });
+    return blogPosts;
   },
 };
 

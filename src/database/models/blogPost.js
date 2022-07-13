@@ -11,7 +11,6 @@ const BlogPost = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       foreignKey: true,
     },
-    image: DataTypes.STRING,
     published: DataTypes.DATE,
     updated: DataTypes.DATE,
   }, {
