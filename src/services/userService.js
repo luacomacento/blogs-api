@@ -51,6 +51,13 @@ const userService = {
     const { password, ...userWithoutPassword } = user.toJSON();
     return userWithoutPassword;
   },
+
+  getByEmail: async (email) => {
+    const user = await User.findOne({ where: { email } });
+    if (!user) return null;
+    const { password, ...userWithoutPassword } = user.toJSON();
+    return userWithoutPassword;
+  },
 };
 
 module.exports = userService;

@@ -20,6 +20,14 @@ const categoriesService = {
     const categories = await Category.findAll();
     return categories;
   },
+
+  getManyByIds: async (ids) => {
+    const result = await Promise.all(
+      ids.map((categoryId) => Category.findOne({ where: { id: categoryId } })),
+    );
+    const foundCategories = result.filter((category) => category !== null);
+    return foundCategories;
+  },
 };
 
 module.exports = categoriesService;
