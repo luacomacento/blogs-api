@@ -44,6 +44,13 @@ const userService = {
     });
     return result;
   },
+
+  getById: async (id) => {
+    const user = await User.findOne({ where: { id } });
+    if (!user) return null;
+    const { password, ...userWithoutPassword } = user.toJSON();
+    return userWithoutPassword;
+  },
 };
 
 module.exports = userService;
