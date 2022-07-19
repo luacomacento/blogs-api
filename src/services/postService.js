@@ -51,26 +51,8 @@ const postService = {
   },
 
   delete: async (id) => {
-    await PostCategory.destroy({ where: { postId: id } });
     const success = await BlogPost.destroy({ where: { id } });
     return !!success;
-  },
-
-  deleteMany: async (postIds) => {
-    await PostCategory.destroy({ where: { postId: postIds } });
-    const success = await BlogPost.destroy({ where: { id: postIds } });
-    return !!success;
-  },
-
-  deleteFromUserId: async (userId) => {
-    const success = await BlogPost.destroy({ where: { userId } });
-    return !!success;
-  },
-
-  getPostsByUserId: async (userId) => {
-    const postsByUser = await BlogPost.findAll({ where: { userId } });
-    const result = postsByUser.map((post) => post.toJSON());
-    return result;
   },
 
   search: async (query) => {

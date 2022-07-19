@@ -4,6 +4,7 @@ const BlogPost = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+      // onDelete: 'CASCADE',
     },
     title: DataTypes.STRING,
     content: DataTypes.STRING,

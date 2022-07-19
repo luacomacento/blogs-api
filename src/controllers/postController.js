@@ -1,5 +1,3 @@
-// const { Op } = require('sequelize');
-// const { User, Category, BlogPost } = require('../database/models');
 const categoriesService = require('../services/categoriesService');
 const postService = require('../services/postService');
 const userService = require('../services/userService');
