@@ -6,6 +6,7 @@ const suffix = {
   dev: '-dev',
   development: '-dev',
   test: '-test',
+  production: '',
 };
 
 const options = {
@@ -27,6 +28,9 @@ module.exports = {
     ...options,
   },
   test: {
+    ...options,
+  },
+  production: {
     ...options,
   },
 };
