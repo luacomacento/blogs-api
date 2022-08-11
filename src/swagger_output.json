@@ -1,0 +1,1063 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Blogs API",
+    "description": "A RESTful API that simulates the functionalities of a blog. A user can sign up and log in, besides creating, reading, updating and deleting their own posts, as well as their private information. It uses JWT for authentication.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/"
+    }
+  ],
+  "paths": {
+    "/login/": {
+      "post": {
+        "tags": [
+          "Login"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "object",
+                    "example": "user@email.com"
+                  },
+                  "password": {
+                    "type": "object",
+                    "example": "any"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "fieldsMissing": {
+                    "value": {
+                      "message": "Some required fields are missing"
+                    }
+                  },
+                  "invalidFields": {
+                    "value": {
+                      "message": "Invalid fields"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codegen-request-body-name": "body"
+      }
+    },
+    "/user/": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUsers"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createUser"
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/token"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "displayName length < 8": {
+                    "value": {
+                      "message": "\\\"displayName\\\" length must be at least 8 characters long"
+                    }
+                  },
+                  "invalid email": {
+                    "value": {
+                      "message": "\\\"email\\\" must be a valid email"
+                    }
+                  },
+                  "password length < 6": {
+                    "value": {
+                      "message": "\\\"password\\\" length must be at least 6 characters long"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User already registered"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/{id}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getUser"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "User does not exist"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/me": {
+      "delete": {
+        "tags": [
+          "User"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/categories/": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getCategories"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createCategory"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 3,
+                  "name": "Category name"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "\"name\" is required"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/post/": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getPosts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createPost"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/createPostSuccess"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "missing fields": {
+                    "$ref": "#/components/examples/missingFields"
+                  },
+                  "categoryIds not found": {
+                    "$ref": "#/components/examples/idsNotFound"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/post/search": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getPosts"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/post/{id}": {
+      "get": {
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getSinglePost"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Post does not exist"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/updatePost"
+              }
+            }
+          },
+          "required": false
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getSinglePost"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "missing fields": {
+                    "$ref": "#/components/examples/missingFields"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  },
+                  "unauthorized user": {
+                    "$ref": "#/components/examples/unauthorizedUser"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Post"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "token not found": {
+                    "$ref": "#/components/examples/tokenNotFound"
+                  },
+                  "token invalid": {
+                    "$ref": "#/components/examples/tokenInvalid"
+                  },
+                  "unauthorized user": {
+                    "$ref": "#/components/examples/unauthorizedUser"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "message": "Post does not exist"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "examples": {
+      "tokenNotFound": {
+        "value": {
+          "message": "Token not found"
+        }
+      },
+      "tokenInvalid": {
+        "value": {
+          "message": "Expired or invalid token"
+        }
+      },
+      "missingFields": {
+        "value": {
+          "message": "Some required fields are missing"
+        }
+      },
+      "idsNotFound": {
+        "value": {
+          "message": "\\\"categoryIds\\\" not found"
+        }
+      },
+      "unauthorizedUser": {
+        "value": {
+          "message": "Unauthorized user"
+        }
+      }
+    },
+    "schemas": {
+      "createUser": {
+        "type": "object",
+        "properties": {
+          "displayName": {
+            "type": "string",
+            "example": "Brett Wiltshire"
+          },
+          "email": {
+            "type": "string",
+            "example": "brett@email.com"
+          },
+          "password": {
+            "type": "string",
+            "example": 123456
+          },
+          "image": {
+            "type": "string",
+            "example": "http://4.bp.blogspot.com/_YA50adQ-7vQ/S1gfR_6ufpI/AAAAAAAAAAk/1ErJGgRWZDg/S45/brett.png"
+          }
+        }
+      },
+      "getCategories": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "example": 1
+            },
+            "name": {
+              "type": "string",
+              "example": "Category name 1"
+            }
+          }
+        }
+      },
+      "createCategory": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Category name"
+          }
+        }
+      },
+      "createPost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Latest updates, August 1st"
+          },
+          "content": {
+            "type": "string",
+            "example": "The whole text for the blog post goes here in this key"
+          },
+          "categoryIds": {
+            "type": "array",
+            "items": {
+              "example": [
+                1,
+                2
+              ]
+            }
+          }
+        }
+      },
+      "getSinglePost": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Post title"
+          },
+          "content": {
+            "type": "string",
+            "example": "Best post of the year"
+          },
+          "userId": {
+            "type": "number",
+            "example": 1
+          },
+          "published": {
+            "type": "string",
+            "example": "2011-08-01T19:58:00.000Z"
+          },
+          "updated": {
+            "type": "string",
+            "example": "2011-08-01T19:58:00.000Z"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number",
+                "example": 1
+              },
+              "displayName": {
+                "type": "string",
+                "example": "Lewis Hamilton"
+              },
+              "email": {
+                "type": "string",
+                "example": "lewishamilton@email.com"
+              }
+            }
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "name": {
+                  "type": "string",
+                  "example": "Category name"
+                }
+              }
+            }
+          }
+        }
+      },
+      "getPosts": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "example": 1
+            },
+            "title": {
+              "type": "string",
+              "example": "Post title"
+            },
+            "content": {
+              "type": "string",
+              "example": "Best post of the year"
+            },
+            "userId": {
+              "type": "number",
+              "example": 1
+            },
+            "published": {
+              "type": "string",
+              "example": "2011-08-01T19:58:00.000Z"
+            },
+            "updated": {
+              "type": "string",
+              "example": "2011-08-01T19:58:00.000Z"
+            },
+            "user": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "number",
+                  "example": 1
+                },
+                "displayName": {
+                  "type": "string",
+                  "example": "Lewis Hamilton"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "lewishamilton@email.com"
+                }
+              }
+            },
+            "categories": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "number",
+                    "example": 1
+                  },
+                  "name": {
+                    "type": "string",
+                    "example": "Category name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "updatePost": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Post title"
+          },
+          "content": {
+            "type": "string",
+            "example": "Post content goes here"
+          }
+        }
+      },
+      "createPostSuccess": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 3
+          },
+          "title": {
+            "type": "string",
+            "example": "Latest updates, August 1st"
+          },
+          "content": {
+            "type": "string",
+            "example": "The whole text for the blog post goes here in this key"
+          },
+          "userId": {
+            "type": "number",
+            "example": 1
+          },
+          "updated": {
+            "type": "string",
+            "example": "2022-05-18T18:00:01.196Z"
+          },
+          "created": {
+            "type": "string",
+            "example": "2022-05-18T18:00:01.196Z"
+          }
+        }
+      },
+      "getUser": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "example": 1
+          },
+          "displayName": {
+            "type": "string",
+            "example": "Brett Wiltshire"
+          },
+          "email": {
+            "type": "string",
+            "example": "brett@email.com"
+          },
+          "image": {
+            "type": "string",
+            "example": "http://4.bp.blogspot.com/_YA50adQ-7vQ/S1gfR_6ufpI/AAAAAAAAAAk/1ErJGgRWZDg/S45/brett.png"
+          }
+        }
+      },
+      "getUsers": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number",
+              "example": 1
+            },
+            "displayName": {
+              "type": "string",
+              "example": "Brett Wiltshire"
+            },
+            "email": {
+              "type": "string",
+              "example": "brett@email.com"
+            },
+            "image": {
+              "type": "string",
+              "example": "http://4.bp.blogspot.com/_YA50adQ-7vQ/S1gfR_6ufpI/AAAAAAAAAAk/1ErJGgRWZDg/S45/brett.png"
+            }
+          }
+        }
+      },
+      "token": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjo1LCJkaXNwbGF5TmFtZSI6InVzdWFyaW8gZGUgdGVzdGUiLCJlbWFpbCI6InRlc3RlQGVtYWlsLmNvbSIsImltYWdlIjoibnVsbCJ9LCJpYXQiOjE2MjAyNDQxODcsImV4cCI6MTYyMDY3NjE4N30.Roc4byj6mYakYqd9LTCozU1hd9k_Vw5IWKGL4hcCVG8"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
